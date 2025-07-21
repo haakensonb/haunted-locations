@@ -5,11 +5,6 @@ import datetime
 
 # NOTE: This is only setup to work with Sqlite
 class Base(DeclarativeBase):
-    type_annotation_map = {datetime.datetime: DateTime(timezone=True)}
-
-
-class DefaultTable(Base):
-    __tablename__ = "default_table"
     id: Mapped[int] = mapped_column(primary_key=True)
     created_at = mapped_column(
         DateTime(timezone=True), server_default=text("(datetime('now'))")
@@ -19,6 +14,8 @@ class DefaultTable(Base):
         server_default=text("(datetime('now'))"),
         server_onupdate=text("(datetime('now'))"),
     )
+
+    type_annotation_map = {datetime.datetime: DateTime(timezone=True)}
 
 
 # TODO: extract to settings file
@@ -30,7 +27,7 @@ connect_args = {"check_same_thread": False}
 engine = create_engine(url=sqlite_url, connect_args=connect_args)
 
 
-def create_db_and_tables():
+def create_db_and_tables() -> None:
     Base.metadata.create_all(engine)
 
 
